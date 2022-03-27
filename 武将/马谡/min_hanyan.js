@@ -22,10 +22,11 @@
         }
         "step 1"
         if(result.bool && result.targets[0].countCards('he')){
-            result.targets[0].discardPlayerCard(targets[0],'he',true);
-        }
-        else{
-            event.finish();
+            result.targets[0].chooseToDiscard('he',1,true).set('ai',function(card){
+                if(card.name=='tao') return -10;
+                if(card.name=='jiu'&&_status.event.player.hp==1) return -10;
+                return get.unuseful(card)+2.5*(5-get.owner(card).hp);
+            });
         }
    },  
    ai:{
