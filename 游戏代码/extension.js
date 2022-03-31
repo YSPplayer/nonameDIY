@@ -8,6 +8,17 @@ game.import("extension",function(lib,game,ui,get,ai,_status){return {name:"民�
          lib.rank.rarity.epic.addArray([]);
          lib.rank.rarity.legend.addArray([]);
     }
+    //武将阵亡配音：参考阳光包
+    lib.skill._minzhenwangpeiyin={
+        trigger:{player:'dieBegin',},
+        priority:2,
+        forced:true,
+        unique:true,
+        popup:false,
+        content:function(){                 
+            game.playAudio('..','extension','民间武将/audio',trigger.player.name);                                                                          
+        }
+    }
     //自定义势力写法参考"时空枢纽"  
     var tenUi=document.createElement('style');//十周年UI支持
     var style2=document.createElement('style');//妖势力Min_yao
@@ -28,37 +39,47 @@ game.import("extension",function(lib,game,ui,get,ai,_status){return {name:"民�
     tenUi.innerHTML+=".player>.camp-wrap[data-camp='Min_yao']>.camp-back {background: linear-gradient(to bottom, rgb(218,112,214), rgb(218,112,214));}";
     tenUi.innerHTML+=".player>.camp-wrap[data-camp='Min_yao']>.camp-name {text-shadow: 0 0 5px rgb(218,112,214), 0 0 10px rgb(218,112,214), 0 0 15px rgb(218,112,214);}";
 //十周年结尾
-document.head.appendChild(tenUi);
-},precontent:function(){
-    
-},help:{},config:{},package:{
-    character:{
-        character:{
-            "min_baosanniang":["female","shu",3,["chengshi","zhenshou"],["des:详情请见三国杀鲍三娘"]],
-            "min_zhanghe":["male","wei",4,["min_benxi"],["des:暂无"]],
-            "min_masu":["male","shu",4,["min_hanyan","min_xiaocai","min_caoyong"],["des:暂无"]],
-            "min_simayi":["male","Min_yao",3,["min_zhabing","min_guimo"],["des:暂无"]],
-        },
-        translate:{
-            "min_baosanniang":"★鲍三娘",
-            "min_zhanghe":"★张郃",
-            "min_masu":"★马谡",
-            "min_simayi":"★司马懿",
-        },
-    },
-    card:{
-        card:{
-        },
-        translate:{
-        },
-        list:[],
-    },
-    skill:{
-        skill:{
+document.head.appendChild(tenUi);        
+},
+
+precontent:function(minjianwujiang){
+    //插入角色分类(参考时空枢纽)
+    if(minjianwujiang.enable){
+    game.import('character',function(){	
+        var minjianwujiang={
+            name:'minjianwujiang',
+            connect:true,
+           //角色分栏
+           characterSort:{
+                minjianwujiang:{
+                "min_shu":["min_baosanniang","min_masu"],
+                "min_wei":["min_zhanghe"],
+                "min_yao":["min_simayi"],
+                },
+            },	
+            //武将
+            character:{
+                "min_baosanniang":["female","shu",3,["chengshi","zhenshou"],["die_audio"]],
+                "min_zhanghe":["male","wei",4,["min_benxi"],["die_audio"]],
+                "min_masu":["male","shu",4,["min_hanyan","min_xiaocai","min_caoyong"],["die_audio"]],
+                "min_simayi":["male","Min_yao",3,["min_zhabing","min_guimo"],["die_audio"]],
+                
+            },
+
+            //武将文本描述
+            characterIntro:{
+                //<br>表示换行
+                "min_baosanniang":"鲍三娘，鲍家庄鲍员外的小女儿。后来与关索成亲，关羽自传授其武艺，因此也造就了鲍三娘的文武双全。荆州失守之后鲍三娘就跟随关索一同投奔蜀汉，并随诸葛亮征讨南蛮。平定了南蛮之后，夫妻二人就此一直替诸葛亮镇守着南中，他们也的确留下了许多脍炙人口的行侠仗义故事，在民间广为流传。",
+                "min_zhanghe":"张郃，字儁乂，河间鄚人。三国时期魏国名将。官渡之战时，本为袁绍部将的张郃投降了曹操，并在曹操帐下多立功勋，于曹魏建立后加封为征西车骑将军。诸葛亮六出祁山之间，张郃多次抵御蜀军的进攻，于公元231年在木门道被诸葛亮设伏射死。后谥曰壮侯。为曹魏“五子良将”之一。",
+                "min_masu":"马谡，字幼常，襄阳宜城人，三国时期蜀汉大臣，侍中马良之弟。初以荆州从事跟随刘备取蜀入川，曾任绵竹、成都令、越嶲太守。诸葛亮北伐时因作战失误而失守街亭，因而被诸葛亮所斩。",
+                "min_simayi":"三国时期魏国杰出的政治家、军事家，西晋王朝的奠基人。曾任职过曹魏的大都督，大将军，太尉，太傅。是辅佐了魏国四代的托孤辅政之重臣，后期成为掌控魏国朝政的权臣。善谋奇策，多次征伐有功，其中最显著的功绩是两次率大军成功对抗诸葛亮北伐和远征平定辽东。对屯田、水利等农耕经济发展有重要贡献。73岁去世，辞郡公和殊礼，葬于首阳山。谥号“宣文”；次子司马昭封晋王后，追封司马懿为宣王；司马炎称帝后，追尊司马懿为宣皇帝。",
+            },
+            //武将技能
+                 skill:{
             chengshi:{
                 shaRelated:true,
                 forced:true,
-                audio:"ext:民间武将:2",
+                audio:"ext:民间武将/audio:2",
                 trigger:{
                     global:"shaMiss",
                 },
@@ -85,7 +106,7 @@ document.head.appendChild(tenUi);
     },
             },
             "chengshi2":{
-                audio:"ext:民间武将:2",
+                audio:"ext:民间武将/audio:2",
                 enable:"chooseToUse",
                 filterCard:function(card){
         return get.suit(card)=='heart';//判断某种花色牌的条件  
@@ -210,7 +231,7 @@ document.head.appendChild(tenUi);
                 },
             },
             "chengshi3":{
-                audio:"ext:民间武将:2",
+                audio:"ext:民间武将/audio:2",
                 enable:"chooseToUse",
                 filterCard:function(card){
         return get.suit(card)=='club';//判断某种花色牌的条件  
@@ -242,7 +263,7 @@ document.head.appendChild(tenUi);
                 },
             },
             zhenshou:{
-                audio:"ext:民间武将:2",
+                audio:"ext:民间武将/audio:2",
                 trigger:{
                     player:"phaseBefore",
                 },
@@ -267,7 +288,7 @@ document.head.appendChild(tenUi);
                 },
             },
             "min_benxi":{
-                audio:"ext:民间武将:2",
+                audio:"ext:民间武将/audio:2",
                 trigger:{
                     player:["phaseDrawBefore"],
                 },
@@ -326,7 +347,7 @@ document.head.appendChild(tenUi);
                 },
             },
             "min_hanyan":{
-                audio:"ext:民间武将:2",
+                audio:"ext:民间武将/audio:2",
                 trigger:{
                     player:["useCardAfter","respondAfter"],
                 },
@@ -373,7 +394,7 @@ document.head.appendChild(tenUi);
                 },
             },
             "min_xiaocai":{
-                audio:"ext:民间武将:2",
+                audio:"ext:民间武将/audio:2",
                 trigger:{
                     player:"discardAfter",
                 },
@@ -404,7 +425,7 @@ document.head.appendChild(tenUi);
     },
             },
             "min_guimo":{
-                audio:"ext:民间武将:2",
+                audio:"ext:民间武将/audio:2",
                 trigger:{
                     player:"phaseDrawBegin2",
                 },
@@ -417,7 +438,7 @@ document.head.appendChild(tenUi);
     },
             },
             "min_zhabing":{
-                audio:"ext:民间武将:1",
+                audio:"ext:民间武将/audio:1",
                 trigger:{
                     player:"phaseJieshuBegin",
                 },
@@ -437,7 +458,7 @@ document.head.appendChild(tenUi);
                 },
             },
             "min_zhabing2":{
-                audio:"ext:民间武将:1",
+                audio:"ext:民间武将/audio:1",
                 trigger:{
                     player:"damageBegin4",
                 },
@@ -459,39 +480,76 @@ document.head.appendChild(tenUi);
                     },
                 },
             },
+    },
+    translate:{
+         ///角色分栏
+         "min_shu":"<b>·<font color=#FF0000>民间·蜀</font></b>",
+         "min_wei":"<b>·<font color=#4169E1>民间·魏</font></b>",
+         "min_yao":"<b>·<font color=#DA70D6>民间·妖</font></b>",
+
+        //武将
+        "min_baosanniang":"★鲍三娘",
+        "min_zhanghe":"★张郃",
+        "min_masu":"★马谡",
+        "min_simayi":"★司马懿",
+        //技能
+        chengshi:"承师",
+        "chengshi_info":"出牌阶段，若你使用的【杀】被【闪】抵消后，你的红心手牌可以当杀使用，直到回合结束。回合外，任意角色对你使用【杀】，你用【闪】抵消后，你的梅花手牌可以当【闪】使用，直到该角色回合结束。",
+        "chengshi2":"承师",
+        "chengshi2_info":"",
+        "chengshi3":"承师",
+        "chengshi3_info":"",
+        zhenshou:"镇守",
+        "zhenshou_info":"回合开始阶段，你可摸3张牌，并跳过判定阶段，摸牌阶段，出牌阶段和弃牌阶段，直接回合结束。",
+        "min_benxi":"奔袭",
+        "min_benxi_info":"你可以选择跳过摸牌阶段，并观看一次任意一名角色的手牌；若如此做，该回合的出牌阶段，你使用【杀】无距离且造成的伤害+1。",
+        "min_benxi2":"奔袭",
+        "min_benxi2_info":"",
+        "min_hanyan":"汗颜",
+        "min_hanyan_info":"出牌阶段，当你的手牌数小于或等于你的攻击范围时，你每使用或打出一张手牌便可指定你的攻击范围内的一名角色弃一张牌。",
+        "min_caoyong":"草用",
+        "min_caoyong_info":"锁定技，你不能使用【无懈可击】。",
+        "min_xiaocai":"小才",
+        "min_xiaocai_info":"当你的弃牌数大于等于2且花色相同时，回合结束阶段可以摸一张牌。",
+        "min_xiaocai2":"小才",
+        "min_xiaocai2_info":"",
+        "min_guimo":"鬼谋",
+        "min_guimo_info":"摸牌阶段，摸'X+2'张牌，X为当前损失的体力值。",
+        "min_zhabing":"诈病",
+        "min_zhabing_info":"回合结束阶段，自减一点体力，至自己下一回合开始前不受任何伤害。",
+        "min_zhabing2":"诈病",
+        "min_zhabing2_info":"",
+    }
+        }
+        for(var i in minjianwujiang.character){
+            minjianwujiang.character[i][4].push('ext:民间武将/image/character/'+i+'.jpg')
+         }
+         return minjianwujiang;   
+
+    });
+    //参考阳光包
+    lib.config.all.characters.push('minjianwujiang');
+    lib.translate['minjianwujiang_character_config']="民间武将";
+    }
+
+    
+},
+
+help:{},config:{},package:{
+    character:{
+    },
+    card:{
+        card:{
         },
         translate:{
-            chengshi:"承师",
-            "chengshi_info":"出牌阶段，若你使用的【杀】被【闪】抵消后，你的红心手牌可以当杀使用，直到回合结束。回合外，任意角色对你使用【杀】，你用【闪】抵消后，你的梅花手牌可以当【闪】使用，直到该角色回合结束。",
-            "chengshi2":"承师",
-            "chengshi2_info":"",
-            "chengshi3":"承师",
-            "chengshi3_info":"",
-            zhenshou:"镇守",
-            "zhenshou_info":"回合开始阶段，你可摸3张牌，并跳过判定阶段，摸牌阶段，出牌阶段和弃牌阶段，直接回合结束。",
-            "min_benxi":"奔袭",
-            "min_benxi_info":"你可以选择跳过摸牌阶段，并观看一次任意一名角色的手牌；若如此做，该回合的出牌阶段，你使用【杀】无距离且造成的伤害+1。",
-            "min_benxi2":"奔袭",
-            "min_benxi2_info":"",
-            "min_hanyan":"汗颜",
-            "min_hanyan_info":"出牌阶段，当你的手牌数小于或等于你的攻击范围时，你每使用或打出一张手牌便可指定你的攻击范围内的一名角色弃一张牌。",
-            "min_caoyong":"草用",
-            "min_caoyong_info":"锁定技，你不能使用【无懈可击】。",
-            "min_xiaocai":"小才",
-            "min_xiaocai_info":"当你的弃牌数大于等于2且花色相同时，回合结束阶段可以摸一张牌。",
-            "min_xiaocai2":"小才",
-            "min_xiaocai2_info":"",
-            "min_guimo":"鬼谋",
-            "min_guimo_info":"摸牌阶段，摸'X+2'张牌，X为当前损失的体力值。",
-            "min_zhabing":"诈病",
-            "min_zhabing_info":"回合结束阶段，自减一点体力，至自己下一回合开始前不受任何伤害。",
-            "min_zhabing2":"诈病",
-            "min_zhabing2_info":"",
         },
+        list:[],
+    },
+    skill:{
     },
     intro:"",
-    author:"无名玩家",
+    author:"神数不神",
     diskURL:"",
     forumURL:"",
     version:"1.0",
-},files:{"character":["min_masu.jpg","min_baosanniang.jpg","min_zhanghe.jpg","min_simayi.jpg"],"card":[],"skill":[]}}})
+},files:{"character":[],"card":[],"skill":[]}}})
